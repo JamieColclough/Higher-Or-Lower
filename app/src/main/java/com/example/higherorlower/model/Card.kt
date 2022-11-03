@@ -1,6 +1,10 @@
-package com.example.higherorlower.model;
+package com.example.higherorlower.model
 
-data class Card (val value: CardValue, val suit: CardSuit)
+data class Card(val value: CardValue, val suit: CardSuit) {
+    fun getImageName(): String {
+        return  "${value.name.lowercase()}_of_${suit.stringVal}"
+    }
+}
 
 enum class CardValue(val stringVal: String) {
     ACE("A"),
