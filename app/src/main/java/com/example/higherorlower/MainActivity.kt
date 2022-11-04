@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +31,7 @@ import com.example.higherorlower.model.CardValue
 import com.example.higherorlower.ui.theme.HigherOrLowerTheme
 import com.example.higherorlower.ui.viewmodel.GameState
 import com.example.higherorlower.ui.viewmodel.GameViewModel
+import com.example.higherorlower.ui.viewmodel.GuessResult
 import java.security.AccessController.getContext
 
 class MainActivity : ComponentActivity() {
@@ -61,20 +63,29 @@ fun HealthBar(lives: Int) {
         )
         Icon(
             if (lives >= 2) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder ,
-            contentDescription = "1 Life",
+            contentDescription = "2 Lives",
             tint = MaterialTheme.colors.primary,
             modifier = Modifier.size(90.dp)
-
-
         )
         Icon(
             if (lives == 3) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder ,
-            contentDescription = "1 Life",
+            contentDescription = "3 Lives",
             tint = MaterialTheme.colors.primary,
             modifier = Modifier.size(90.dp)
 
         )
     }
+}
+@Composable
+fun HeaderText(lastGuess: GuessResult?){
+    Text(
+        when (lastGuess) {
+            GuessResult.CORRECT -> "Nice one! you were Correct :)"
+            GuessResult.INCORRECT -> "Unlucky! you have lost a life :("
+            GuessResult.SAME -> "Phew! Same value so you don't lose a life :O"
+            else -> "Higher or Lower?" // null
+        }
+    )
 }
 
 @Composable
@@ -90,11 +101,12 @@ fun CardImage(card: Card) {
 
 @Composable
 fun Container(viewModel: GameViewModel = viewModel()) {
-    viewModel.resetGame()
     val gameState = viewModel.gameState
-    HealthBar(lives = gameState.lives)
-    Text("Higher or Lower?")
-    gameState.PreviousCard?.let { CardImage(card = it) }
+    Column (horizontalAlignment = Alignment.CenterHorizontally) {
+        HealthBar(lives = gameState.lives)
+        HeaderText(gameState.lastGuess)
+        CardImage(card = gameState.previousCard)
+    }
 }
 
 @Composable
