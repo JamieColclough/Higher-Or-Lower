@@ -20,7 +20,7 @@ data class GameState(
     /**
      * How many lives the user has left.
      */
-    var lives: Int = 3,
+    var lives: Int = 2,
 
     /**
      * The last card the user picked.
@@ -40,7 +40,7 @@ class GameViewModel : ViewModel() {
     fun resetGame() {
         gameState.shuffledDeck = getCards()
         gameState.shuffledDeck.shuffle()
-        gameState.lives = 3
+        gameState.lives = 2
         gameState.PreviousCard = gameState.shuffledDeck.removeAt(0)
     }
 

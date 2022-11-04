@@ -6,17 +6,27 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.*
 import com.example.higherorlower.model.Card
+import com.example.higherorlower.model.CardSuit
+import com.example.higherorlower.model.CardValue
 import com.example.higherorlower.ui.theme.HigherOrLowerTheme
 import com.example.higherorlower.ui.viewmodel.GameState
 import com.example.higherorlower.ui.viewmodel.GameViewModel
@@ -28,8 +38,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             HigherOrLowerTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Greeting("Android")
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
                     Container()
                 }
             }
@@ -38,18 +50,51 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CardImage(state: GameState) {
-    state.PreviousCard?.let {
-        val imageName = it.getImageName()
-        val id: Int = LocalContext.current.resources.getIdentifier(imageName, "drawable", LocalContext.current.packageName)
-        Image(painter = painterResource(id = id),contentDescription = "")
+fun HealthBar(lives: Int) {
+    Row (horizontalArrangement = Arrangement.Center) {
+        Icon(
+            if (lives >= 1) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder ,
+            contentDescription = "1 Life",
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.size(90.dp)
+
+        )
+        Icon(
+            if (lives >= 2) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder ,
+            contentDescription = "1 Life",
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.size(90.dp)
+
+
+        )
+        Icon(
+            if (lives == 3) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder ,
+            contentDescription = "1 Life",
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.size(90.dp)
+
+        )
     }
+}
+
+@Composable
+fun CardImage(card: Card) {
+    val imageName = card.getImageName()
+    val id: Int = LocalContext.current.resources.getIdentifier(
+        imageName,
+        "drawable",
+        LocalContext.current.packageName
+    )
+    Image(painter = painterResource(id = id), contentDescription = "", Modifier.padding(50.dp))
 }
 
 @Composable
 fun Container(viewModel: GameViewModel = viewModel()) {
     viewModel.resetGame()
-    CardImage(state= viewModel.gameState)
+    val gameState = viewModel.gameState
+    HealthBar(lives = gameState.lives)
+    Text("Higher or Lower?")
+    gameState.PreviousCard?.let { CardImage(card = it) }
 }
 
 @Composable
@@ -61,6 +106,14 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     HigherOrLowerTheme {
-        Greeting("Android")
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background
+        ) {
+            HealthBar(lives = 2)
+            CardImage(card = Card(CardValue.EIGHT, CardSuit.CLUBS))
+            Text("hello")
+        }
     }
 }
