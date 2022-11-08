@@ -1,12 +1,13 @@
 package com.example.higherorlower.ui.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.higherorlower.model.Card
 import com.example.higherorlower.model.CardSuit
 import com.example.higherorlower.model.CardValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * Data class to give the current state of the game
@@ -22,46 +23,60 @@ data class GameState(
      */
     var lives: Int = 3,
 
-    var lastGuess: GuessResult? = null,
-
-    var isGameOver: Boolean = false
-) {
     /**
      * The last card the user picked.
      */
-    lateinit var previousCard: Card;
+    var previousCard: Card? = null,
+
+    /**
+     * Whether the last guess the user made was correct or not.
+     */
+    var lastGuess: GuessResult? = null,
+
+    /**
+     * Whether the game has ended.
+     */
+    var isGameOver: Boolean = false
+) {
 }
 
 /**
  * ViewModel for the state of the game.
  */
 class GameViewModel : ViewModel() {
-    var gameState by mutableStateOf(GameState())
-        private set
+
+    private val _gameState = MutableStateFlow(GameState())
+    val gameState: StateFlow<GameState> = _gameState.asStateFlow()
 
     init {
         resetGame()
     }
 
     fun resetGame() {
-        gameState.shuffledDeck = getCards()
-        gameState.shuffledDeck.shuffle()
-        gameState.lives = 3
-        gameState.previousCard = gameState.shuffledDeck.removeAt(0)
+        val cards = getCards()
+        cards.shuffle()
+        _gameState.update{
+            GameState(cards,3,null, null,false)
+        }
+    }
+
+    fun pickCard(){
+        val pickedCard = _gameState.value.shuffledDeck.removeAt(0)
+        _gameState.update { state -> state.copy(previousCard = pickedCard) }
     }
 
     fun makeGuess(guess: Guess) {
-        val pickedCard = gameState.shuffledDeck.removeAt(0)
-        val previousCardVal = gameState.previousCard.value.faceValue
-
-        pickedCard.value.faceValue.let {
-            when {
-                it == previousCardVal -> {guessCallBack(GuessResult.SAME)} // If cards equal, gets away with it either way
-                it > previousCardVal -> { // Higher
-                    guessCallBack(if(guess == Guess.HIGHER) GuessResult.CORRECT else GuessResult.INCORRECT)
-                }
-                else -> { // Lower
-                    guessCallBack(if(guess == Guess.LOWER) GuessResult.CORRECT else GuessResult.INCORRECT)
+        gameState.value.previousCard?.value?.faceValue?.let { previousCardVal ->
+            pickCard()
+            gameState.value.previousCard?.value?.faceValue?.let { newCardVal ->
+                when {
+                    newCardVal == previousCardVal -> {guessCallBack(GuessResult.SAME)} // If cards equal, gets away with it either way
+                    newCardVal > previousCardVal -> { // Higher
+                        guessCallBack(if(guess == Guess.HIGHER) GuessResult.CORRECT else GuessResult.INCORRECT)
+                    }
+                    else -> { // Lower
+                        guessCallBack(if(guess == Guess.LOWER) GuessResult.CORRECT else GuessResult.INCORRECT)
+                    }
                 }
             }
         }
@@ -69,12 +84,12 @@ class GameViewModel : ViewModel() {
 
     private fun guessCallBack(result: GuessResult) {
         if (result == GuessResult.INCORRECT) {
-            --gameState.lives
-            if (gameState.lives == 0) {
-                gameState.isGameOver = true
+            --gameState.value.lives
+            if (gameState.value.lives == 0) {
+                _gameState.value.isGameOver = true
             }
         }
-        gameState.lastGuess = result;
+        _gameState.value.lastGuess = result
     }
 
     /**
