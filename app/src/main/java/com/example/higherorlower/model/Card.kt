@@ -22,7 +22,7 @@ enum class CardValue(val stringVal: String, val faceValue: Int) {
     KING("king", 13);
 
     companion object {
-        fun find(value: String): CardValue? = CardValue.values().find { it.stringVal == value }
+        fun find(value: String): CardValue? = values().find { it.stringVal == value }
     }
 }
 
@@ -33,6 +33,6 @@ enum class CardSuit(val stringVal: String) {
     DIAMONDS("diamonds");
 
     companion object {
-        fun find(value: String): CardValue? = CardValue.values().find { it.stringVal == value }
+        fun find(value: String): CardSuit? = values().find { it.stringVal == value }
     }
 }
