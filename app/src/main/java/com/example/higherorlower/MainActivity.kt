@@ -17,13 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.higherorlower.model.Card
-import com.example.higherorlower.model.CardSuit
-import com.example.higherorlower.model.CardValue
 import com.example.higherorlower.ui.theme.HigherOrLowerTheme
 import com.example.higherorlower.ui.viewmodel.GameViewModel
 import com.example.higherorlower.ui.viewmodel.Guess
@@ -92,7 +89,10 @@ fun CardImage(card: Card?) {
         "drawable",
         LocalContext.current.packageName
     )
-    Image(painter = painterResource(id = id), contentDescription = "", Modifier.padding(50.dp).fillMaxWidth())
+    Image(painter = painterResource(id = id), contentDescription = "",
+        Modifier
+            .padding(50.dp)
+            .fillMaxWidth())
 }
 
 @Composable
@@ -103,11 +103,15 @@ fun ButtonLabelText(isGameOver: Boolean, anyCardBeenTurnedOver: Boolean) {
 @Composable
 fun GameScreen(viewModel: GameViewModel = viewModel()) {
     val gameState by viewModel.gameState.collectAsState()
+    val errorMsg by viewModel.errorMsg.collectAsState()
     Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(IntrinsicSize.Max).padding(vertical = 30.dp)
+        modifier = Modifier
+            .width(IntrinsicSize.Max)
+            .padding(vertical = 30.dp)
     ) {
         HealthBar(lives = gameState.lives)
         HeaderText(gameState.lastGuess, gameState.isGameOver)
+        Text(errorMsg, color = MaterialTheme.colors.error)
         CardImage(card = gameState.previousCard)
         Spacer(modifier = Modifier.weight(1f))
         ButtonLabelText(isGameOver = gameState.isGameOver, anyCardBeenTurnedOver = gameState.previousCard != null)
@@ -123,22 +127,6 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
                 Spacer(modifier = Modifier.width(20.dp))
                 Button(onClick = {viewModel.makeGuess(Guess.HIGHER)}){Text("Higher")}
             }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    HigherOrLowerTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colors.background
-        ) {
-            HealthBar(lives = 2)
-            CardImage(card = Card(CardValue.EIGHT, CardSuit.CLUBS))
-            Text("hello")
         }
     }
 }
