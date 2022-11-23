@@ -96,6 +96,12 @@ fun CardImage(card: Card?) {
 }
 
 @Composable
+fun CorrectGuessText(correctGuesses: Int) {
+    val guessString = "You have made ${correctGuesses} correct guesses."
+    Text(guessString, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+}
+
+@Composable
 fun ButtonLabelText(isGameOver: Boolean, anyCardBeenTurnedOver: Boolean) {
     Text(if (isGameOver) "Play again?" else if (anyCardBeenTurnedOver) "Higher or Lower?" else "Turn over to start")
 }
@@ -109,6 +115,7 @@ fun GameScreen(viewModel: GameViewModel = viewModel()) {
         HealthBar(lives = gameState.lives)
         HeaderText(gameState.lastGuess, gameState.isGameOver)
         CardImage(card = gameState.previousCard)
+        CorrectGuessText(correctGuesses = gameState.correctGuesses)
         Spacer(modifier = Modifier.weight(1f))
         ButtonLabelText(isGameOver = gameState.isGameOver, anyCardBeenTurnedOver = gameState.previousCard != null)
         Row( horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
