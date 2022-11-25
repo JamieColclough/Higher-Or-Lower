@@ -98,7 +98,7 @@ fun CardImage(card: Card?) {
 @Composable
 fun CorrectGuessText(correctGuesses: Int) {
     val guessString = "You have made ${correctGuesses} correct guesses."
-    Text(guessString, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+    Text(guessString, fontWeight = FontWeight.Bold, fontSize = 15.sp)
 }
 
 @Composable

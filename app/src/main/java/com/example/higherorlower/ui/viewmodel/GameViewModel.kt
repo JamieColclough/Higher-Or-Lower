@@ -25,6 +25,11 @@ data class GameState(
     var lives: Int = 3,
 
     /**
+     * Amount of times user has guessed correctly.
+     */
+    var correctGuesses: Int = 0,
+
+    /**
      * The last card the user picked.
      */
     var previousCard: Card? = null,
@@ -62,7 +67,7 @@ class GameViewModel : ViewModel() {
                 val cards = CardApi.service.getCards()
                 cards.shuffle()
                 _gameState.update {
-                    GameState(cards, 3, null, null, false)
+                    GameState(cards, 3, 0,null, null, false)
                 }
                 _errorMsg.update { "" }
             } catch (e: Exception) {
@@ -105,6 +110,9 @@ class GameViewModel : ViewModel() {
             if (gameState.value.lives == 0) {
                 _gameState.value.isGameOver = true
             }
+        }
+        else if (result == GuessResult.CORRECT) {
+            gameState.value.correctGuesses ++
         }
         _gameState.value.lastGuess = result
     }
