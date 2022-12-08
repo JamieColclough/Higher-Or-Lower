@@ -25,7 +25,9 @@ import com.example.higherorlower.ui.theme.HigherOrLowerTheme
 import com.example.higherorlower.ui.viewmodel.GameViewModel
 import com.example.higherorlower.ui.viewmodel.Guess
 import com.example.higherorlower.ui.viewmodel.GuessResult
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +110,7 @@ fun ButtonLabelText(isGameOver: Boolean, anyCardBeenTurnedOver: Boolean) {
 
 @Composable
 fun GameScreen(viewModel: GameViewModel = viewModel()) {
-    val gameState by viewModel.gameState.collectAsState()
+    val gameState by viewModel.uiState.collectAsState()
     val errorMsg by viewModel.errorMsg.collectAsState()
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
